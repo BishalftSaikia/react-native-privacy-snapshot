@@ -36,17 +36,12 @@ RCT_EXPORT_MODULE();
 
 - (void)handleAppStateResignActive {
     if (self->enabled) {
-        UIWindow    *keyWindow = [UIApplication sharedApplication].keyWindow;
-        UIImageView *blurredScreenImageView = [[UIImageView alloc] initWithFrame:keyWindow.bounds];
+        UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+       
+        UIVisualEffectView *view = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleLight]];
+        view.frame = keyWindow.bounds;
+        self->obfuscatingView = view;
         
-        UIGraphicsBeginImageContext(keyWindow.bounds.size);
-        [keyWindow drawViewHierarchyInRect:keyWindow.frame afterScreenUpdates:NO];
-        UIImage *viewImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        
-        blurredScreenImageView.image = [viewImage applyLightEffect];
-        
-        self->obfuscatingView = blurredScreenImageView;
         [[UIApplication sharedApplication].keyWindow addSubview:self->obfuscatingView];
 
     }
@@ -70,6 +65,10 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(enabled:(BOOL) _enable) {
     self->enabled = _enable;
+}
+
++ (BOOL)requiresMainQueueSetup {
+    return YES;
 }
 
 @end
